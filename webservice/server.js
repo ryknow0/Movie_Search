@@ -1,17 +1,21 @@
 const express = require('express');
 const fetch = require('node-fetch');
+const path = require('path');
+require('dotenv').config();
 
 const app = express();
-const API_KEY = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIxZTNkNDAxNzMwNDI0MWI4OTBhMzQ1ZGE3M2NmODhhYiIsInN1YiI6IjY2NDQxMWM4MzlhNjgxNDQ2Yjc3ZGE2ZCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.ANMDMd6PMuJLFNrU_Lt-N8vGQRTO0lEJdHlqrEMt9fI';
+//const API_KEY = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIxZTNkNDAxNzMwNDI0MWI4OTBhMzQ1ZGE3M2NmODhhYiIsInN1YiI6IjY2NDQxMWM4MzlhNjgxNDQ2Yjc3ZGE2ZCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.ANMDMd6PMuJLFNrU_Lt-N8vGQRTO0lEJdHlqrEMt9fI';
 
+app.use(express.static(path.join(__dirname, 'dist')));
 
 //Working Curl
 //curl -X GET 'http://localhost:3000/movies?search=Toy%20Story'
 //Browser test
 //http://localhost:3000/movies?search=Toy%20Story
-app.get('/movies', async (req, res) => {
+app.get('/api/movies', async (req, res) => {
   try {
     const title = req.query.search;
+    //Check for empty search string
     if (!title) {
       return res.status(400).json({ error: 'Search parameter "title" is required' });
     }
@@ -21,14 +25,14 @@ app.get('/movies', async (req, res) => {
       method: 'GET',
       headers: {
         accept: 'application/json',
-        Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIxZTNkNDAxNzMwNDI0MWI4OTBhMzQ1ZGE3M2NmODhhYiIsInN1YiI6IjY2NDQxMWM4MzlhNjgxNDQ2Yjc3ZGE2ZCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.ANMDMd6PMuJLFNrU_Lt-N8vGQRTO0lEJdHlqrEMt9fI'
+        Authorization: 'Bearer ${process.env.API_KEY}'
       }
     };
 
 
     const response = await fetch(url, options);
     const data = await response.json();
-
+    //check response for empty value
     if (!data.results || data.results.length === 0) {
       return res.status(404).json({ error: 'No movies found' });
     }
