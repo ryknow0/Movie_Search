@@ -1,85 +1,114 @@
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
+import { ref } from 'vue';
+
+const searchQuery = ref('');
+const movies = ref([]);
+const searched = ref(false);
+
+const searchMovies = async () => {
+  searched.value = true;
+  const response = await fetch(`/api/movies?search=${encodeURIComponent(searchQuery.value)}`);
+  const data = await response.json();
+  if (data.error) {
+    movies.value = [];
+  } else {
+    movies.value = data;
+  }
+};
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
+ <div class="main">
+    <h3>Movie Search</h3>
+    <form @submit.prevent="searchMovies">
+      <input type="text" v-model="searchQuery" placeholder="Enter movie title">
+      <input type="submit" value="Search">
+    </form>
+    <div v-if="movies.length > 0" class="result" v-for="movie in movies" :key="movie.id">
+      <h4>{{ movie.title }}</h4>
+      <img :src="movie.poster_image_url" alt="Movie Poster" class="poster">
+      <p>Popularity: {{ movie.popularity_summary }}</p>
     </div>
-  </header>
-
-  <RouterView />
+    <div v-else-if="searched && movies.length === 0" class="result">No movies found</div>
+  </div>
 </template>
 
+
 <style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
+@font-face {
+  font-family: "ColfaxAI";
+  src: url(https://cdn.openai.com/API/fonts/ColfaxAIRegular.woff2) format("woff2"),
+    url(https://cdn.openai.com/API/fonts/ColfaxAIRegular.woff) format("woff");
+  font-weight: normal;
+  font-style: normal;
 }
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
+@font-face {
+  font-family: "ColfaxAI";
+  src: url(https://cdn.openai.com/API/fonts/ColfaxAIBold.woff2) format("woff2"),
+    url(https://cdn.openai.com/API/fonts/ColfaxAIBold.woff) format("woff");
+  font-weight: bold;
+  font-style: normal;
 }
-
-nav {
-  width: 100%;
-  font-size: 12px;
+.main,
+.main input {
+  font-size: 16px;
+  line-height: 24px;
+  color: #959697;
+  font-family: "ColfaxAI", Helvetica, sans-serif;
+}
+.main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 60px;
+}
+.main h3 {
+  font-size: 32px;
+  line-height: 40px;
+  font-weight: bold;
+  color: #959697;
+  margin: 16px 0 40px;
+}
+.main form {
+  display: flex;
+  flex-direction: column;
+  width: 320px;
+}
+.main input[type="text"] {
+  padding: 12px 16px;
+  border: 1px solid #10a37f;
+  border-radius: 4px;
+  margin-bottom: 24px;
+  outline-color: #10a37f;
+}
+.main ::placeholder {
+  color: #8e8ea0;
+  opacity: 1;
+}
+.main input[type="submit"] {
+  padding: 12px 0;
+  color: #000000;
+  background-color: #10a37f;
+  border: none;
+  border-radius: 4px;
   text-align: center;
-  margin-top: 2rem;
+  cursor: pointer;
 }
-
-nav a.router-link-exact-active {
-  color: var(--color-text);
+.main .results {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
 }
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
+.main .result {
+  margin: 20px;
+  text-align: center;
 }
-
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
+.main .result h4 {
+  margin-bottom: 10px;
 }
-
-nav a:first-of-type {
-  border: 0;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
+.main .result img {
+  max-width: 200px;
+  max-height: 300px;
+  margin-bottom: 10px;
 }
 </style>
