@@ -1,0 +1,19 @@
+{
+  "name": "webservice",
+  "version": "1.0.0",
+  "description": "App to query TMDB API",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ryknow0/Movie_Search.git"
+  },
+  "author": "Rconklin",
+  "license": "SEE LICENSE IN ./LICENSE",
+  "bugs": {
+    "url": "https://github.com/ryknow0/Movie_Search/issues"
+  },
+  "homepage": "https://github.com/ryknow0/Movie_Search#readme"
+}
